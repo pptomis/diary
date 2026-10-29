@@ -1,11 +1,14 @@
 // api/catalog.js
 
 const CLIENTS_CONFIG = {
-  "default": { name: "Роздрібний клієнт", marginStock: 100, marginOrder: 100, round: true },
-  "k-01":     { name: "ТОВ Офіс-Світ", marginStock: 25, marginOrder: 30, round: true },
-  "k-02":     { name: "ФОП Ковальчук", marginStock: 35, marginOrder: 40, round: true },
-  "vip-opt":  { name: "Партнер VIP", marginStock: 20, marginOrder: 22, round: true },
-  "client-7": { name: "Торговий Дім", marginStock: 28, marginOrder: 32, round: true }
+  "default": { name: "Роздрібний клієнт", marginStock: 90, marginOrder: 90, round: true },
+  "for-vmk-8488948872":     { name: "ТОВ ВМК", marginStock: 50, marginOrder: 70, round: true },
+  "for-han-ele-49846495":     { name: "ТОВ ХАН-ЕЛЕКТРОБАУ", marginStock: 50, marginOrder: 70, round: true },
+  "for-zpg-518922959":  { name: "ПАТ ЗПГ", marginStock: 70, marginOrder: 80, round: true },
+  "for-verbena-559956544": { name: "ТОВ ВЕРБЕНА", marginStock: 50, marginOrder: 70, round: true },
+  "for-art-997665": { name: "ТОВ АРТ ЕКСПРЕС", marginStock: 50, marginOrder: 70, round: true },
+  "for-biz-inter-18444654": { name: "ТОВ БІЗ ІНТЕРПРАЙЗ", marginStock: 70, marginOrder: 80, round: true }
+  
 };
 
 const PRODUCTS_DATA = [
