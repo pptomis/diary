@@ -26,7 +26,6 @@
         </div>
       </div>
       
-      <!-- Кнопка кошика -->
       <button onclick="openCartModal()" class="relative bg-slate-900 text-white px-3.5 py-2 rounded-xl text-sm font-medium flex items-center space-x-2 hover:bg-slate-800 transition">
         <i class="fa-solid fa-cart-shopping"></i>
         <span class="hidden sm:inline">Кошик</span>
@@ -38,36 +37,25 @@
   <!-- Пошук та фільтри -->
   <main class="max-w-6xl mx-auto px-4 mt-6">
     <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-      
-      <!-- Пошук -->
       <div class="relative w-full md:max-w-md">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-gray-400"></i>
-        <input type="text" id="search-input" placeholder="Пошук за назвою або артикулом..." 
+        <input type="text" id="search-input" placeholder="Пошук за назвою, брендом або артикулом..." 
                class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 transition">
       </div>
 
-      <!-- Фільтри наявності -->
       <div class="flex items-center bg-gray-200/70 p-1 rounded-xl text-xs font-medium self-start md:self-auto">
-        <button onclick="setFilterStatus('all')" id="filter-tab-all" class="filter-tab px-3 py-2 rounded-lg transition bg-white text-gray-900 shadow-sm">
-          Всі товари
-        </button>
-        <button onclick="setFilterStatus('in_stock')" id="filter-tab-stock" class="filter-tab px-3 py-2 rounded-lg transition text-gray-600 hover:text-gray-900">
-          В наявності
-        </button>
-        <button onclick="setFilterStatus('on_order')" id="filter-tab-order" class="filter-tab px-3 py-2 rounded-lg transition text-gray-600 hover:text-gray-900">
-          Під замовлення
-        </button>
+        <button onclick="setFilterStatus('all')" id="filter-tab-all" class="filter-tab px-3 py-2 rounded-lg transition bg-white text-gray-900 shadow-sm">Всі товари</button>
+        <button onclick="setFilterStatus('in_stock')" id="filter-tab-stock" class="filter-tab px-3 py-2 rounded-lg transition text-gray-600 hover:text-gray-900">В наявності</button>
+        <button onclick="setFilterStatus('on_order')" id="filter-tab-order" class="filter-tab px-3 py-2 rounded-lg transition text-gray-600 hover:text-gray-900">Під замовлення</button>
       </div>
-
     </div>
 
-    <!-- Сітка товарів -->
     <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       <p class="text-gray-400 text-sm col-span-full text-center py-12">Завантаження каталогів...</p>
     </div>
   </main>
 
-  <!-- Плаваюча кнопка кошика (для мобільних) -->
+  <!-- Плаваюча кнопка кошика -->
   <div id="floating-cart-btn" class="fixed bottom-4 right-4 z-20 hidden">
     <button onclick="openCartModal()" class="bg-slate-900 text-white p-4 rounded-2xl shadow-xl flex items-center space-x-3 active:scale-95 transition">
       <div class="relative">
@@ -81,18 +69,14 @@
   <!-- Модальне вікно Кошика -->
   <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
-      
       <div class="p-4 border-b flex items-center justify-between bg-white">
         <h3 class="font-bold text-base text-gray-800 flex items-center"><i class="fa-solid fa-cart-shopping mr-2"></i> Ваше замовлення</h3>
-        <button onclick="closeCartModal()" class="w-8 h-8 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-200 transition">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <button onclick="closeCartModal()" class="w-8 h-8 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-200 transition"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <div id="cart-items-list" class="p-4 overflow-y-auto flex-1 divide-y"></div>
 
       <div id="cart-footer" class="p-4 border-t bg-gray-50 flex flex-col space-y-3">
-        <!-- Блок назви клієнта з URL -->
         <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-center justify-between text-xs text-blue-900">
           <span class="text-blue-600 font-medium"><i class="fa-solid fa-user mr-1.5"></i> Клієнт:</span>
           <span id="cart-client-display" class="font-bold text-sm"></span>
@@ -111,7 +95,7 @@
     </div>
   </div>
 
-  <!-- Модальне вікно перегляду фото -->
+  <!-- Модальне вікно фото -->
   <div id="photo-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
       <div class="p-4 border-b flex items-center justify-between bg-white z-10">
@@ -131,7 +115,6 @@
   </div>
 
   <script>
-    // Конфігурація Telegram для миттєвої відправки повідомлення
     const TELEGRAM_BOT_TOKEN = "9257755366:AAFE07B9SYMN2t_PthnFYFc_sLp310LBTj4"; 
     const TELEGRAM_CHAT_ID = "660384099";
 
@@ -142,7 +125,6 @@
     let currentPhotoIndex = 0;
     let activeStatusFilter = 'all';
 
-    // Завантаження розрахованих даних із Vercel Serverless Function (/api/catalog)
     async function fetchCatalogData() {
       const urlParams = new URLSearchParams(window.location.search);
       const clientId = urlParams.get('id') || 'default';
@@ -188,7 +170,11 @@
         if (activeStatusFilter === 'in_stock' && item.is_order) return;
         if (activeStatusFilter === 'on_order' && !item.is_order) return;
 
-        if (query && !item.name.toLowerCase().includes(query) && !item.art.toLowerCase().includes(query)) {
+        // Пошук за назвою, брендом або артикулом
+        if (query && 
+            !item.name.toLowerCase().includes(query) && 
+            !item.art.toLowerCase().includes(query) && 
+            !(item.brand && item.brand.toLowerCase().includes(query))) {
           return;
         }
 
@@ -206,8 +192,12 @@
               ${photos.length > 1 ? `<span class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full"><i class="fa-regular fa-image mr-1"></i>${photos.length}</span>` : ''}
             </div>
             
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-mono text-gray-400">Арт. ${item.art}</span>
+            <div class="flex items-center justify-between mb-1.5">
+              <div class="flex items-center space-x-1.5">
+                ${item.brand ? `<span class="text-[11px] bg-slate-100 text-slate-700 font-semibold px-2 py-0.5 rounded-md">${item.brand}</span>` : ''}
+                <span class="text-xs font-mono text-gray-400">Арт. ${item.art}</span>
+              </div>
+
               ${item.is_order 
                 ? `<span class="text-xs bg-amber-50 text-amber-700 font-medium px-2 py-0.5 rounded-full"><i class="fa-solid fa-clock mr-1"></i>Під замовлення</span>`
                 : `<span class="text-xs bg-emerald-50 text-emerald-700 font-medium px-2 py-0.5 rounded-full">В наявності: ${item.qual} шт</span>`
@@ -328,7 +318,7 @@
           <div class="flex-1">
             <h4 class="font-medium text-xs text-gray-900 leading-snug line-clamp-2">${item.name}</h4>
             <p class="text-[11px] text-gray-400 font-mono mt-0.5">
-              Арт. ${item.art} | ${item.price} грн/шт 
+              ${item.brand ? `<b>${item.brand}</b> | ` : ''}Арт. ${item.art} | ${item.price} грн/шт 
               ${item.is_order ? '<span class="text-amber-600 font-semibold ml-1">(Під замовлення)</span>' : ''}
             </p>
           </div>
@@ -362,7 +352,7 @@
         grandTotal += sum;
 
         message += `${index + 1}. <b>${item.name}</b> ${item.is_order ? '⚠️ <i>[Під замовлення]</i>' : ''}\n`;
-        message += `   Арт: <code>${art}</code> | ${qty} шт x ${item.price} грн = <b>${sum} грн</b>\n`;
+        message += `   Бренд: ${item.brand || '-'} | Арт: <code>${art}</code> | ${qty} шт x ${item.price} грн = <b>${sum} грн</b>\n`;
       });
 
       message += `------------------------------\n`;
@@ -404,7 +394,7 @@
       const item = productsData[index];
       currentPhotos = item.photo ? item.photo.split(',').map(s => s.trim()) : [];
       currentPhotoIndex = 0;
-      document.getElementById('modal-title').innerText = item.name;
+      document.getElementById('modal-title').innerText = `${item.brand ? '[' + item.brand + '] ' : ''}${item.name}`;
       updateModalView();
       document.getElementById('photo-modal').classList.remove('hidden');
     }

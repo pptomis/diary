@@ -1,40 +1,13 @@
 // api/catalog.js
 
-// 1. КОНФІГУРАЦІЯ КЛІЄНТІВ ТА НАЦІНОК (Розділено на наявність та під замовлення)
 const CLIENTS_CONFIG = {
-  "default": { 
-    name: "Роздрібний клієнт", 
-    marginStock: 100,  // націнка на товари в наявності (%)
-    marginOrder: 100,  // націнка під замовлення (%)
-    round: true 
-  },
-  "k-01": { 
-    name: "ТОВ Офіс-Світ", 
-    marginStock: 25, 
-    marginOrder: 30, 
-    round: true 
-  },
-  "k-02": { 
-    name: "ФОП Ковальчук", 
-    marginStock: 35, 
-    marginOrder: 40, 
-    round: true 
-  },
-  "vip-opt": { 
-    name: "Партнер VIP", 
-    marginStock: 20, 
-    marginOrder: 22, 
-    round: true 
-  },
-  "client-7": { 
-    name: "Торговий Дім", 
-    marginStock: 28, 
-    marginOrder: 32, 
-    round: true 
-  }
+  "default": { name: "Роздрібний клієнт", marginStock: 100, marginOrder: 100, round: true },
+  "k-01":     { name: "ТОВ Офіс-Світ", marginStock: 25, marginOrder: 30, round: true },
+  "k-02":     { name: "ФОП Ковальчук", marginStock: 35, marginOrder: 40, round: true },
+  "vip-opt":  { name: "Партнер VIP", marginStock: 20, marginOrder: 22, round: true },
+  "client-7": { name: "Торговий Дім", marginStock: 28, marginOrder: 32, round: true }
 };
 
-// ВАШ МАСИВ ТОВАРІВ З ЗАКУПІВЕЛЬНИМИ ЦІНАМИ (pr)
 const PRODUCTS_DATA = [
   {
     "art": "8842-27-1-a",
@@ -47,14 +20,24 @@ const PRODUCTS_DATA = [
     "qual": "5"
   },
   {
-    "art": "8844-27-4-a",
+    "art": "8840-27-1-a",
     "barcode": "4,06328E+12",
-    "pr": "202,62",
-    "price": "382,3",
+    "pr": "147,876",
+    "price": "279",
     "brand": "AXENT",
-    "name": "Щоденник 2027 Classic Lux, 145*210, слп/т коричневий",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76874_8844-27-4-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76874_8844-27-4-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76874_8844-27-4-A_03.jpg",
-    "qual": "2"
+    "name": "Щоденник 2027 Classic Style, 145*210, с/т чорний",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76853_8840-27-1-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76853_8840-27-1-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76853_8840-27-1-A_03.jpg",
+    "qual": "5"
+  },
+  {
+    "art": "8815-27-01-a",
+    "barcode": "4,06328E+12",
+    "pr": "283,704",
+    "price": "535,3",
+    "brand": "AXENT",
+    "name": "Щоденник 2027 Partner Lines, 145*210, чорний",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76916_8815-27-01-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76916_8815-27-01-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76916_8815-27-01-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76916_8815-27-01-A_04.jpg",
+    "qual": "4"
   },
   {
     "art": "8844-27-5-a",
@@ -77,13 +60,33 @@ const PRODUCTS_DATA = [
     "qual": "3"
   },
   {
-    "art": "8845-27-4-a",
+    "art": "8843-27-1-a",
     "barcode": "4,06328E+12",
     "pr": "202,62",
     "price": "382,3",
     "brand": "AXENT",
-    "name": "Щоденник 2027 Classic Milano, 145*210, слп/т коричневий",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76882_8845-27-4-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76882_8845-27-4-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76882_8845-27-4-A_03.jpg",
+    "name": "Щоденник 2027 Classic Palermo, 145*210, слп/т чорний",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76865_8843-27-1-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76865_8843-27-1-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76865_8843-27-1-A_03.jpg",
+    "qual": "2"
+  },
+  {
+    "art": "8815-27-02-a",
+    "barcode": "4,06328E+12",
+    "pr": "283,704",
+    "price": "535,3",
+    "brand": "AXENT",
+    "name": "Щоденник 2027 Partner Lines, 145*210, синій",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76917_8815-27-02-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76917_8815-27-02-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76917_8815-27-02-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76917_8815-27-02-A_04.jpg",
+    "qual": "2"
+  },
+  {
+    "art": "8844-27-4-a",
+    "barcode": "4,06328E+12",
+    "pr": "202,62",
+    "price": "382,3",
+    "brand": "AXENT",
+    "name": "Щоденник 2027 Classic Lux, 145*210, слп/т коричневий",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76874_8844-27-4-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76874_8844-27-4-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76874_8844-27-4-A_03.jpg",
     "qual": "1"
   },
   {
@@ -94,7 +97,27 @@ const PRODUCTS_DATA = [
     "brand": "AXENT",
     "name": "Щоденник 2027 Classic Milano, 145*210, слп/т чорний",
     "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76878_8845-27-1-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76878_8845-27-1-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76878_8845-27-1-A_03.jpg",
-    "qual": "2"
+    "qual": "1"
+  },
+  {
+    "art": "8815-27-23-a",
+    "barcode": "4,06328E+12",
+    "pr": "283,704",
+    "price": "535,3",
+    "brand": "AXENT",
+    "name": "Щоденник 2027 Partner Lines, 145*210, темно-зелений",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76919_8815-27-23-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76919_8815-27-23-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76919_8815-27-23-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76919_8815-27-23-A_04.jpg",
+    "qual": "1"
+  },
+  {
+    "art": "8845-27-4-a",
+    "barcode": "4,06328E+12",
+    "pr": "202,62",
+    "price": "382,3",
+    "brand": "AXENT",
+    "name": "Щоденник 2027 Classic Milano, 145*210, слп/т коричневий",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76882_8845-27-4-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76882_8845-27-4-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76882_8845-27-4-A_03.jpg",
+    "qual": "1"
   },
   {
     "art": "8843-27-3-a",
@@ -107,16 +130,6 @@ const PRODUCTS_DATA = [
     "qual": "1"
   },
   {
-    "art": "8843-27-1-a",
-    "barcode": "4,06328E+12",
-    "pr": "202,62",
-    "price": "382,3",
-    "brand": "AXENT",
-    "name": "Щоденник 2027 Classic Palermo, 145*210, слп/т чорний",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76865_8843-27-1-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76865_8843-27-1-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76865_8843-27-1-A_03.jpg",
-    "qual": "2"
-  },
-  {
     "art": "8840-27-4-a",
     "barcode": "4,06328E+12",
     "pr": "147,876",
@@ -125,16 +138,6 @@ const PRODUCTS_DATA = [
     "name": "Щоденник 2027 Classic Style, 145*210, з/т коричневий",
     "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76856_8840-27-4-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76856_8840-27-4-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76856_8840-27-4-A_03.jpg",
     "qual": "1"
-  },
-  {
-    "art": "8840-27-1-a",
-    "barcode": "4,06328E+12",
-    "pr": "147,876",
-    "price": "279",
-    "brand": "AXENT",
-    "name": "Щоденник 2027 Classic Style, 145*210, с/т чорний",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76853_8840-27-1-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76853_8840-27-1-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76853_8840-27-1-A_03.jpg",
-    "qual": "5"
   },
   {
     "art": "8835-27-4-a",
@@ -157,36 +160,6 @@ const PRODUCTS_DATA = [
     "qual": "1"
   },
   {
-    "art": "8815-27-02-a",
-    "barcode": "4,06328E+12",
-    "pr": "283,704",
-    "price": "535,3",
-    "brand": "AXENT",
-    "name": "Щоденник 2027 Partner Lines, 145*210, синій",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76917_8815-27-02-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76917_8815-27-02-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76917_8815-27-02-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76917_8815-27-02-A_04.jpg",
-    "qual": "2"
-  },
-  {
-    "art": "8815-27-23-a",
-    "barcode": "4,06328E+12",
-    "pr": "283,704",
-    "price": "535,3",
-    "brand": "AXENT",
-    "name": "Щоденник 2027 Partner Lines, 145*210, темно-зелений",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76919_8815-27-23-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76919_8815-27-23-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76919_8815-27-23-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76919_8815-27-23-A_04.jpg",
-    "qual": "2"
-  },
-  {
-    "art": "8815-27-01-a",
-    "barcode": "4,06328E+12",
-    "pr": "283,704",
-    "price": "535,3",
-    "brand": "AXENT",
-    "name": "Щоденник 2027 Partner Lines, 145*210, чорний",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76916_8815-27-01-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76916_8815-27-01-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76916_8815-27-01-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76916_8815-27-01-A_04.jpg",
-    "qual": "5"
-  },
-  {
     "art": "8840-27-3-a",
     "barcode": "4,06328E+12",
     "pr": "147,88",
@@ -195,6 +168,56 @@ const PRODUCTS_DATA = [
     "name": "Щоденник 2027 Classic Style, 145*210, з/т бордовий",
     "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76855_8840-27-3-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76855_8840-27-3-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76855_8840-27-3-A_03.jpg",
     "qual": "1"
+  },
+  {
+    "art": "8835-27-2-a",
+    "barcode": "4,06328E+12",
+    "pr": "354,89",
+    "price": "669,6",
+    "brand": "AXENT",
+    "name": "Щоденник 2027 Partner Elegance, 145*210, Designed for dreams.",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76945_8835-27-2-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76945_8835-27-2-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76945_8835-27-2-A_03.jpg",
+    "qual": "1"
+  },
+  {
+    "art": "8835-27-3-a",
+    "barcode": "4,06328E+12",
+    "pr": "354,89",
+    "price": "669,6",
+    "brand": "AXENT",
+    "name": "Щоденник 2027 Partner Elegance, 145*210, Keep shining bright.",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76946_8835-27-3-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76946_8835-27-3-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76946_8835-27-3-A_03.jpg",
+    "qual": "1"
+  },
+  {
+    "art": "8834-27-1-a",
+    "barcode": "4,06328E+12",
+    "pr": "345,04",
+    "price": "651",
+    "brand": "AXENT",
+    "name": "Щоденник 2027 Partner Force, 145*210, темно синій. Пакування: подарункова коробка",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76991_8834-27-1-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76991_8834-27-1-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76991_8834-27-1-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76991_8834-27-1-A_04.jpg",
+    "qual": "1"
+  },
+  {
+    "art": "8834-27-2-a",
+    "barcode": "4,06328E+12",
+    "pr": "345,04",
+    "price": "651",
+    "brand": "AXENT",
+    "name": "Щоденник 2027 Partner Force, 145*210, чорний. Пакування: подарункова коробка",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76992_8834-27-2-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76992_8834-27-2-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76992_8834-27-2-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76992_8834-27-2-A_04.jpg",
+    "qual": "1"
+  },
+  {
+    "art": "8832-27-4-a",
+    "barcode": "4,06328E+12",
+    "pr": "323,14",
+    "price": "609,7",
+    "brand": "AXENT",
+    "name": "Щоденник 2027 Partner Daily Shine, 145*210, Embrace challenges",
+    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76989_8832-27-4-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76989_8832-27-4-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76989_8832-27-4-A_03.jpg",
+    "qual": "0"
   },
   {
     "art": "8810-27-23-a",
@@ -285,26 +308,6 @@ const PRODUCTS_DATA = [
     "name": "Щоденник 2027 Partner Soft Cloud, 145*210, смарагдовий",
     "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76967_8837-27-3-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76967_8837-27-3-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76967_8837-27-3-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76967_8837-27-3-A_04.jpg",
     "qual": "0"
-  },
-  {
-    "art": "8835-27-2-a",
-    "barcode": "4,06328E+12",
-    "pr": "354,89",
-    "price": "669,6",
-    "brand": "AXENT",
-    "name": "Щоденник 2027 Partner Elegance, 145*210, Designed for dreams.",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76945_8835-27-2-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76945_8835-27-2-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76945_8835-27-2-A_03.jpg",
-    "qual": "1"
-  },
-  {
-    "art": "8835-27-3-a",
-    "barcode": "4,06328E+12",
-    "pr": "354,89",
-    "price": "669,6",
-    "brand": "AXENT",
-    "name": "Щоденник 2027 Partner Elegance, 145*210, Keep shining bright.",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76946_8835-27-3-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76946_8835-27-3-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76946_8835-27-3-A_03.jpg",
-    "qual": "1"
   },
   {
     "art": "8835-27-6-a",
@@ -407,16 +410,6 @@ const PRODUCTS_DATA = [
     "qual": "0"
   },
   {
-    "art": "8832-27-4-a",
-    "barcode": "4,06328E+12",
-    "pr": "323,14",
-    "price": "609,7",
-    "brand": "AXENT",
-    "name": "Щоденник 2027 Partner Daily Shine, 145*210, Embrace challenges",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76989_8832-27-4-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76989_8832-27-4-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76989_8832-27-4-A_03.jpg",
-    "qual": "1"
-  },
-  {
     "art": "8832-27-1-a",
     "barcode": "4,06328E+12",
     "pr": "323,14",
@@ -445,26 +438,6 @@ const PRODUCTS_DATA = [
     "name": "Щоденник 2027 Partner Daily Shine, 145*210, Serious stuff",
     "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76988_8832-27-3-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76988_8832-27-3-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76988_8832-27-3-A_03.jpg",
     "qual": "0"
-  },
-  {
-    "art": "8834-27-1-a",
-    "barcode": "4,06328E+12",
-    "pr": "345,04",
-    "price": "651",
-    "brand": "AXENT",
-    "name": "Щоденник 2027 Partner Force, 145*210, темно синій. Пакування: подарункова коробка",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76991_8834-27-1-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76991_8834-27-1-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76991_8834-27-1-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76991_8834-27-1-A_04.jpg",
-    "qual": "1"
-  },
-  {
-    "art": "8834-27-2-a",
-    "barcode": "4,06328E+12",
-    "pr": "345,04",
-    "price": "651",
-    "brand": "AXENT",
-    "name": "Щоденник 2027 Partner Force, 145*210, чорний. Пакування: подарункова коробка",
-    "photo": "https://ftplk.vivat.cn.ua/LKImages/Axent/76992_8834-27-2-A_01.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76992_8834-27-2-A_02.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76992_8834-27-2-A_03.jpg, https://ftplk.vivat.cn.ua/LKImages/Axent/76992_8834-27-2-A_04.jpg",
-    "qual": "1"
   },
   {
     "art": "8505-27-64-a",
@@ -991,21 +964,14 @@ const PRODUCTS_DATA = [
 export default async function handler(req, res) {
   const { id } = req.query;
 
-  // Отримуємо конфіг клієнта
   const clientConfig = CLIENTS_CONFIG[id] || CLIENTS_CONFIG['default'];
 
-  // Обробка товарів
   const sanitizedProducts = PRODUCTS_DATA.map(item => {
     const qty = parseInt(item.qual) || 0;
     const isOnOrder = qty === 0;
 
-    // Вибираємо потрібну націнку залежно від статусу товару
     const currentMargin = isOnOrder ? clientConfig.marginOrder : clientConfig.marginStock;
-
-    // Парсимо закупівельну ціну
     const basePurchasePrice = parseFloat(String(item.pr).replace(',', '.'));
-    
-    // Розраховуємо ціну з відповідною націнкою
     const calculatedPrice = basePurchasePrice * (1 + currentMargin / 100);
     const finalClientPrice = clientConfig.round ? Math.round(calculatedPrice) : parseFloat(calculatedPrice.toFixed(2));
 
@@ -1013,8 +979,8 @@ export default async function handler(req, res) {
       art: item.art,
       barcode: item.barcode,
       name: item.name,
-      brand: item.brand,
-      price: finalClientPrice, // Тільки фінальна розрахована ціна
+      brand: item.brand || '', // Передаємо бренд
+      price: finalClientPrice,
       photo: item.photo,
       qual: qty,
       is_order: isOnOrder
