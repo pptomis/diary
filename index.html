@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каталог щоденників 2027</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .img-zoom { transition: transform 0.3s ease; }
+    .img-zoom:hover { transform: scale(1.03); }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen font-sans pb-24">
+
+  <!-- Шапка -->
+  <header class="bg-white border-b sticky top-0 z-30 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-20">
+          <img src="/logo.svg" alt="tomis" class="w-20" onerror="this.outerHTML='<div class=\'h-9 px-3 bg-slate-900 text-white font-bold flex items-center rounded-lg text-sm\'>ТОМІС</div>'">
+        </div>
+        <div class="border-l border-gray-200 pl-3">
+          <h1 class="text-base font-semibold leading-tight text-gray-900">Каталог щоденників 2027</h1>
+          <p id="client-badge" class="text-xs text-gray-500">Завантаження...</p>
+        </div>
+      </div>
+      
+      <!-- Кнопка кошика -->
+      <button onclick="openCartModal()" class="relative bg-slate-900 text-white px-3.5 py-2 rounded-xl text-sm font-medium flex items-center space-x-2 hover:bg-slate-800 transition">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="hidden sm:inline">Кошик</span>
+        <span id="cart-count-badge" class="bg-emerald-500 text-white text-[11px] font-bold px-1.5 py-0.2 rounded-full hidden">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Пошук та фільтри -->
+  <main class="max-w-6xl mx-auto px-4 mt-6">
+    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      
+      <!-- Пошук -->
+      <div class="relative w-full md:max-w-md">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-gray-400"></i>
+        <input type="text" id="search-input" placeholder="Пошук за назвою або артикулом..." 
+               class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 transition">
+      </div>
+
+      <!-- Фільтри наявності -->
+      <div class="flex items-center bg-gray-200/70 p-1 rounded-xl text-xs font-medium self-start md:self-auto">
+        <button onclick="setFilterStatus('all')" id="filter-tab-all" class="filter-tab px-3 py-2 rounded-lg transition bg-white text-gray-900 shadow-sm">
+          Всі товари
+        </button>
+        <button onclick="setFilterStatus('in_stock')" id="filter-tab-stock" class="filter-tab px-3 py-2 rounded-lg transition text-gray-600 hover:text-gray-900">
+          В наявності
+        </button>
+        <button onclick="setFilterStatus('on_order')" id="filter-tab-order" class="filter-tab px-3 py-2 rounded-lg transition text-gray-600 hover:text-gray-900">
+          Під замовлення
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Сітка товарів -->
+    <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <p class="text-gray-400 text-sm col-span-full text-center py-12">Завантаження каталогів...</p>
+    </div>
+  </main>
+
+  <!-- Плаваюча кнопка кошика (для мобільних) -->
+  <div id="floating-cart-btn" class="fixed bottom-4 right-4 z-20 hidden">
+    <button onclick="openCartModal()" class="bg-slate-900 text-white p-4 rounded-2xl shadow-xl flex items-center space-x-3 active:scale-95 transition">
+      <div class="relative">
+        <i class="fa-solid fa-cart-shopping text-lg"></i>
+        <span id="floating-cart-badge" class="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+      </div>
+      <span id="floating-cart-total" class="font-bold text-sm">0 грн</span>
+    </button>
+  </div>
+
+  <!-- Модальне вікно Кошика -->
+  <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+      
+      <div class="p-4 border-b flex items-center justify-between bg-white">
+        <h3 class="font-bold text-base text-gray-800 flex items-center"><i class="fa-solid fa-cart-shopping mr-2"></i> Ваше замовлення</h3>
+        <button onclick="closeCartModal()" class="w-8 h-8 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-200 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="cart-items-list" class="p-4 overflow-y-auto flex-1 divide-y"></div>
+
+      <div id="cart-footer" class="p-4 border-t bg-gray-50 flex flex-col space-y-3">
+        <!-- Блок назви клієнта з URL -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-center justify-between text-xs text-blue-900">
+          <span class="text-blue-600 font-medium"><i class="fa-solid fa-user mr-1.5"></i> Клієнт:</span>
+          <span id="cart-client-display" class="font-bold text-sm"></span>
+        </div>
+
+        <div class="flex justify-between items-center font-bold text-lg text-gray-900 pt-1">
+          <span>Разом до сплати:</span>
+          <span id="cart-total-sum">0 грн</span>
+        </div>
+
+        <button id="send-order-btn" onclick="sendOrderToTelegram()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition text-sm flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Надіслати замовлення</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальне вікно перегляду фото -->
+  <div id="photo-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+      <div class="p-4 border-b flex items-center justify-between bg-white z-10">
+        <h3 id="modal-title" class="font-semibold text-sm pr-4 line-clamp-1 text-gray-800"></h3>
+        <button onclick="closeModal()" class="w-8 h-8 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-200"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="relative flex-1 bg-gray-50 flex items-center justify-center p-4 min-h-[300px] select-none">
+        <button id="prev-btn" onclick="prevPhoto()" class="absolute left-3 z-10 w-10 h-10 bg-white/90 shadow-md text-gray-800 rounded-full flex items-center justify-center hover:bg-white"><i class="fa-solid fa-chevron-left text-sm"></i></button>
+        <img id="modal-img" src="" class="max-h-[55vh] w-auto max-w-full object-contain rounded-lg">
+        <button id="next-btn" onclick="nextPhoto()" class="absolute right-3 z-10 w-10 h-10 bg-white/90 shadow-md text-gray-800 rounded-full flex items-center justify-center hover:bg-white"><i class="fa-solid fa-chevron-right text-sm"></i></button>
+        <div id="photo-counter" class="absolute bottom-3 bg-black/60 text-white text-[11px] font-medium px-2.5 py-1 rounded-full"></div>
+      </div>
+      <div class="p-3 border-t bg-white">
+        <div id="modal-thumbs" class="flex space-x-2 overflow-x-auto justify-center py-1"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Конфігурація Telegram для миттєвої відправки повідомлення
+    const TELEGRAM_BOT_TOKEN = "9257755366:AAFE07B9SYMN2t_PthnFYFc_sLp310LBTj4"; 
+    const TELEGRAM_CHAT_ID = "660384099";
+
+    let clientName = "Роздрібний клієнт";
+    let productsData = [];
+    let cart = {};
+    let currentPhotos = [];
+    let currentPhotoIndex = 0;
+    let activeStatusFilter = 'all';
+
+    // Завантаження розрахованих даних із Vercel Serverless Function (/api/catalog)
+    async function fetchCatalogData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const clientId = urlParams.get('id') || 'default';
+
+      try {
+        const res = await fetch(`/api/catalog?id=${clientId}`);
+        if (!res.ok) throw new Error("Помилка завантаження");
+        
+        const data = await res.json();
+        clientName = data.clientName;
+        productsData = data.products;
+
+        document.getElementById('client-badge').innerText = clientName !== "Роздрібний клієнт" 
+          ? `Спеціальна пропозиція: ${clientName}` 
+          : `Актуальний каталог 2027`;
+        document.getElementById('cart-client-display').innerText = clientName;
+
+        renderProducts();
+      } catch (err) {
+        document.getElementById('products-grid').innerHTML = `<p class="text-red-500 text-center col-span-full py-8">Помилка завантаження даних. Спробуйте оновити сторінку.</p>`;
+      }
+    }
+
+    function setFilterStatus(status) {
+      activeStatusFilter = status;
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.className = "filter-tab px-3 py-2 rounded-lg transition text-gray-600 hover:text-gray-900";
+      });
+
+      if (status === 'all') document.getElementById('filter-tab-all').className = "filter-tab px-3 py-2 rounded-lg transition bg-white text-gray-900 shadow-sm";
+      if (status === 'in_stock') document.getElementById('filter-tab-stock').className = "filter-tab px-3 py-2 rounded-lg transition bg-white text-gray-900 shadow-sm";
+      if (status === 'on_order') document.getElementById('filter-tab-order').className = "filter-tab px-3 py-2 rounded-lg transition bg-white text-gray-900 shadow-sm";
+
+      renderProducts(document.getElementById('search-input').value);
+    }
+
+    function renderProducts(filter = '') {
+      const grid = document.getElementById('products-grid');
+      grid.innerHTML = '';
+      const query = filter.toLowerCase().trim();
+
+      productsData.forEach((item, index) => {
+        if (activeStatusFilter === 'in_stock' && item.is_order) return;
+        if (activeStatusFilter === 'on_order' && !item.is_order) return;
+
+        if (query && !item.name.toLowerCase().includes(query) && !item.art.toLowerCase().includes(query)) {
+          return;
+        }
+
+        const photos = item.photo ? item.photo.split(',').map(s => s.trim()) : [];
+        const mainPhoto = photos[0] || '';
+        const inCartQty = cart[item.art] || 0;
+
+        const card = document.createElement('div');
+        card.className = "bg-white border border-gray-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-gray-300 transition";
+
+        card.innerHTML = `
+          <div>
+            <div class="relative bg-gray-50 rounded-xl overflow-hidden mb-3 aspect-square flex items-center justify-center cursor-pointer" onclick="openModal(${index})">
+              <img src="${mainPhoto}" alt="${item.name}" class="object-contain h-full w-full p-4 img-zoom" loading="lazy">
+              ${photos.length > 1 ? `<span class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full"><i class="fa-regular fa-image mr-1"></i>${photos.length}</span>` : ''}
+            </div>
+            
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-mono text-gray-400">Арт. ${item.art}</span>
+              ${item.is_order 
+                ? `<span class="text-xs bg-amber-50 text-amber-700 font-medium px-2 py-0.5 rounded-full"><i class="fa-solid fa-clock mr-1"></i>Під замовлення</span>`
+                : `<span class="text-xs bg-emerald-50 text-emerald-700 font-medium px-2 py-0.5 rounded-full">В наявності: ${item.qual} шт</span>`
+              }
+            </div>
+            
+            <h3 class="font-medium text-sm text-gray-900 leading-snug mb-3">${item.name}</h3>
+          </div>
+
+          <div>
+            <div class="pt-3 border-t border-gray-100 flex items-baseline justify-between mb-3">
+              <span class="text-xs text-gray-400">Ціна:</span>
+              <div class="text-right">
+                <span class="text-xl font-bold text-gray-900">${item.price}</span>
+                <span class="text-xs font-medium text-gray-500 ml-0.5">грн</span>
+              </div>
+            </div>
+
+            <div>
+              ${inCartQty === 0 ? `
+                <button onclick="addToCart('${item.art}')" class="w-full ${item.is_order ? 'bg-amber-600 hover:bg-amber-700' : 'bg-slate-900 hover:bg-slate-800'} text-white py-2.5 rounded-xl font-medium text-sm transition flex items-center justify-center space-x-2">
+                  <i class="fa-solid fa-cart-plus"></i>
+                  <span>${item.is_order ? 'Замовити (Під замовлення)' : 'У кошик'}</span>
+                </button>
+              ` : `
+                <div class="flex items-center justify-between bg-gray-100 rounded-xl p-1">
+                  <button onclick="updateCartQty('${item.art}', -1)" class="w-8 h-8 bg-white rounded-lg shadow-sm font-bold text-gray-700 flex items-center justify-center hover:bg-gray-50">-</button>
+                  <span class="font-bold text-sm text-gray-800">${inCartQty} шт</span>
+                  <button onclick="updateCartQty('${item.art}', 1)" class="w-8 h-8 bg-white rounded-lg shadow-sm font-bold text-gray-700 flex items-center justify-center hover:bg-gray-50">+</button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function addToCart(art) {
+      cart[art] = 1;
+      updateCartUI();
+      renderProducts(document.getElementById('search-input').value);
+    }
+
+    function updateCartQty(art, delta) {
+      if (!cart[art]) return;
+      cart[art] += delta;
+      if (cart[art] <= 0) delete cart[art];
+      updateCartUI();
+      renderProducts(document.getElementById('search-input').value);
+    }
+
+    function updateCartUI() {
+      let totalCount = 0;
+      let totalPrice = 0;
+
+      Object.keys(cart).forEach(art => {
+        const product = productsData.find(p => p.art === art);
+        if (product) {
+          const qty = cart[art];
+          totalCount += qty;
+          totalPrice += product.price * qty;
+        }
+      });
+
+      const badge = document.getElementById('cart-count-badge');
+      const floatBtn = document.getElementById('floating-cart-btn');
+      const floatBadge = document.getElementById('floating-cart-badge');
+      const floatTotal = document.getElementById('floating-cart-total');
+
+      if (totalCount > 0) {
+        badge.innerText = totalCount;
+        badge.classList.remove('hidden');
+        floatBadge.innerText = totalCount;
+        floatTotal.innerText = `${totalPrice} грн`;
+        floatBtn.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+        floatBtn.classList.add('hidden');
+      }
+
+      document.getElementById('cart-total-sum').innerText = `${totalPrice} грн`;
+    }
+
+    function openCartModal() {
+      renderCartItems();
+      document.getElementById('cart-modal').classList.remove('hidden');
+    }
+
+    function closeCartModal() {
+      document.getElementById('cart-modal').classList.add('hidden');
+    }
+
+    function renderCartItems() {
+      const container = document.getElementById('cart-items-list');
+      container.innerHTML = '';
+
+      const keys = Object.keys(cart);
+      if (keys.length === 0) {
+        container.innerHTML = `<p class="text-center text-gray-400 py-8 text-sm">Ваш кошик порожній</p>`;
+        document.getElementById('send-order-btn').disabled = true;
+        document.getElementById('send-order-btn').classList.add('opacity-50');
+        return;
+      }
+
+      document.getElementById('send-order-btn').disabled = false;
+      document.getElementById('send-order-btn').classList.remove('opacity-50');
+
+      keys.forEach(art => {
+        const item = productsData.find(p => p.art === art);
+        const qty = cart[art];
+        const sum = item.price * qty;
+
+        const row = document.createElement('div');
+        row.className = "py-3 flex items-center justify-between space-x-3";
+        row.innerHTML = `
+          <div class="flex-1">
+            <h4 class="font-medium text-xs text-gray-900 leading-snug line-clamp-2">${item.name}</h4>
+            <p class="text-[11px] text-gray-400 font-mono mt-0.5">
+              Арт. ${item.art} | ${item.price} грн/шт 
+              ${item.is_order ? '<span class="text-amber-600 font-semibold ml-1">(Під замовлення)</span>' : ''}
+            </p>
+          </div>
+
+          <div class="flex items-center space-x-2 shrink-0">
+            <div class="flex items-center bg-gray-100 rounded-lg p-0.5">
+              <button onclick="updateCartQty('${art}', -1); renderCartItems();" class="w-6 h-6 bg-white rounded text-xs font-bold">-</button>
+              <span class="text-xs font-bold px-2">${qty}</span>
+              <button onclick="updateCartQty('${art}', 1); renderCartItems();" class="w-6 h-6 bg-white rounded text-xs font-bold">+</button>
+            </div>
+            <span class="font-bold text-sm text-gray-900 min-w-[50px] text-right">${sum} грн</span>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    async function sendOrderToTelegram() {
+      const keys = Object.keys(cart);
+      if (keys.length === 0) return;
+
+      let message = `🛒 <b>НОВЕ ЗАМОВЛЕННЯ ЩОДЕННИКІВ 2027</b>\n`;
+      message += `👤 <b>Клієнт:</b> ${clientName}\n`;
+      message += `------------------------------\n`;
+
+      let grandTotal = 0;
+      keys.forEach((art, index) => {
+        const item = productsData.find(p => p.art === art);
+        const qty = cart[art];
+        const sum = item.price * qty;
+        grandTotal += sum;
+
+        message += `${index + 1}. <b>${item.name}</b> ${item.is_order ? '⚠️ <i>[Під замовлення]</i>' : ''}\n`;
+        message += `   Арт: <code>${art}</code> | ${qty} шт x ${item.price} грн = <b>${sum} грн</b>\n`;
+      });
+
+      message += `------------------------------\n`;
+      message += `💰 <b>ЗАГАЛЬНА СУМА: ${grandTotal} грн</b>`;
+
+      const btn = document.getElementById('send-order-btn');
+      btn.disabled = true;
+      btn.innerText = "Надсилання...";
+
+      try {
+        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            parse_mode: 'HTML',
+            text: message
+          })
+        });
+
+        if (response.ok) {
+          alert("Дякуємо! Ваше замовлення успішно надіслано.");
+          cart = {};
+          updateCartUI();
+          closeCartModal();
+          renderProducts();
+        } else {
+          alert("Помилка відправки. Перевірте налаштування бота.");
+        }
+      } catch (err) {
+        alert("Не вдалося відправити замовлення.");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>Надіслати замовлення</span>`;
+      }
+    }
+
+    function openModal(index) {
+      const item = productsData[index];
+      currentPhotos = item.photo ? item.photo.split(',').map(s => s.trim()) : [];
+      currentPhotoIndex = 0;
+      document.getElementById('modal-title').innerText = item.name;
+      updateModalView();
+      document.getElementById('photo-modal').classList.remove('hidden');
+    }
+
+    function updateModalView() {
+      document.getElementById('modal-img').src = currentPhotos[currentPhotoIndex] || '';
+      const counter = document.getElementById('photo-counter');
+      if (currentPhotos.length > 1) {
+        counter.innerText = `${currentPhotoIndex + 1} / ${currentPhotos.length}`;
+        counter.classList.remove('hidden');
+      } else {
+        counter.classList.add('hidden');
+      }
+
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      if (currentPhotos.length <= 1) {
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+      } else {
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.remove('hidden');
+      }
+
+      const thumbsContainer = document.getElementById('modal-thumbs');
+      thumbsContainer.innerHTML = '';
+      if (currentPhotos.length > 1) {
+        currentPhotos.forEach((src, idx) => {
+          const img = document.createElement('img');
+          img.src = src;
+          const isActive = idx === currentPhotoIndex;
+          img.className = `w-12 h-12 object-cover rounded-lg cursor-pointer border-2 transition ${isActive ? 'border-slate-900 scale-105 shadow-sm' : 'border-transparent opacity-60 hover:opacity-100'}`;
+          img.onclick = () => {
+            currentPhotoIndex = idx;
+            updateModalView();
+          };
+          thumbsContainer.appendChild(img);
+        });
+      }
+    }
+
+    function prevPhoto() {
+      if (currentPhotos.length <= 1) return;
+      currentPhotoIndex = (currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length;
+      updateModalView();
+    }
+
+    function nextPhoto() {
+      if (currentPhotos.length <= 1) return;
+      currentPhotoIndex = (currentPhotoIndex + 1) % currentPhotos.length;
+      updateModalView();
+    }
+
+    function closeModal() {
+      document.getElementById('photo-modal').classList.add('hidden');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('photo-modal');
+      if (!modal.classList.contains('hidden')) {
+        if (e.key === 'ArrowLeft') prevPhoto();
+        if (e.key === 'ArrowRight') nextPhoto();
+        if (e.key === 'Escape') closeModal();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchCatalogData();
+
+      document.getElementById('search-input').addEventListener('input', (e) => {
+        renderProducts(e.target.value);
+      });
+    });
+  </script>
+</body>
+</html>
