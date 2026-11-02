@@ -7,7 +7,8 @@ const CLIENTS_CONFIG = {
   "for-zpg-518922959":  { name: "ПАТ ЗПГ", marginStock: 70, marginOrder: 80, round: true },
   "for-verbena-559956544": { name: "ТОВ ВЕРБЕНА", marginStock: 50, marginOrder: 70, round: true },
   "for-art-997665": { name: "ТОВ АРТ ЕКСПРЕС", marginStock: 50, marginOrder: 70, round: true },
-  "for-biz-inter-18444654": { name: "ТОВ БІЗ ІНТЕРПРАЙЗ", marginStock: 70, marginOrder: 80, round: true }
+  "for-biz-inter-18444654": { name: "ТОВ БІЗ ІНТЕРПРАЙЗ", marginStock: 70, marginOrder: 80, round: true },
+  "for-viki-9784664": { name: "Вікі", marginStock: 60, marginOrder: 75, round: true }
   
 };
 
