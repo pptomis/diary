@@ -9,7 +9,15 @@ const CLIENTS_CONFIG = {
   "for-art-997665": { name: "ТОВ АРТ ЕКСПРЕС", marginStock: 50, marginOrder: 70, round: true },
   "for-biz-inter-18444654": { name: "ТОВ БІЗ ІНТЕРПРАЙЗ", marginStock: 70, marginOrder: 80, round: true },
   "for-viki-9784664": { name: "Вікі", marginStock: 60, marginOrder: 75, round: true },
-  "for-rayduga-48759759": { name: "Райдуга", marginStock: 70, marginOrder: 80, round: true }
+  "for-rayduga-48759759": { name: "Райдуга", marginStock: 70, marginOrder: 80, round: true },
+  "for-sky-1248768": { name: "Скай", marginStock: 70, marginOrder: 80, round: true },
+  "for-denk-9787775": { name: "ДЕНК ТПР", marginStock: 70, marginOrder: 80, round: true },
+  "for-prodholod-887456": { name: "Прод Холод", marginStock: 60, marginOrder: 75, round: true },
+  "for-vitant-8994284": { name: "Вітант", marginStock: 60, marginOrder: 75, round: true },
+  "for-btrs-2547686": { name: "БТР-С", marginStock: 60, marginOrder: 75, round: true },
+  "for-interbeton-18475687": { name: "Інтер Бетон", marginStock: 60, marginOrder: 75, round: true },
+  "for-novomontazh-5874679": { name: "Номомонтаж", marginStock: 70, marginOrder: 80, round: true }
+
   
 };
 
